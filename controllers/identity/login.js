@@ -1,7 +1,6 @@
-import { error } from '@functions';
+import { error, identityPayload, issueTokens } from '@functions';
 import { Identity } from '@models';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 
 export default async (req, res) => {
   const { email, password } = req.body;
@@ -23,7 +22,7 @@ export default async (req, res) => {
     throw error(400, 'Your account has been locked, please reset your password');
   }
 
-  const { id, name, active, confirmed, __t: role, password: passwordFromDb } = identity;
+  const { active, confirmed, password: passwordFromDb } = identity;
   if (!active || !confirmed) {
     throw error(400, 'Your account is not active');
   }
@@ -36,31 +35,8 @@ export default async (req, res) => {
     await identity.updateOne({ loginAttempts: 0 });
   }
 
-  // The JWT public data payload
-  const payload = { name, email, role, me: id };
-
-  const token = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: '15m',
-    algorithm: 'HS256',
-  });
-
-  const refreshToken = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: '12h',
-    algorithm: 'HS256',
-  });
-
-  // Set refresh token as cookie
-  const oneDay = 24 * 3600 * 1000;
-  const isProduction = process.env.NODE_ENV === 'production';
-
-  res.cookie(process.env.JWT_TOKEN_NAME, refreshToken, {
-    domain: process.env.COOKIE_DOMAIN,
-    httpOnly: true,
-    maxAge: oneDay,
-    secure: isProduction,
-    signed: true,
-    sameSite: 'Lax',
-  });
+  // Sign both tokens and set the refresh token cookie
+  const token = issueTokens(res, identityPayload(identity));
 
   // Add last login information to the current user
   await identity.updateOne({ lastLoginAt: Date.now() });

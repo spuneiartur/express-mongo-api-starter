@@ -6,5 +6,7 @@ export { default as safeNumber } from 'express-goodies/functions/safe-number';
 export { default as safeString } from 'express-goodies/functions/safe-string';
 
 // Export the functions
+export { default as identityPayload } from './identity-payload';
+export { default as issueTokens } from './issue-tokens';
 export { default as randomHash } from './random-hash';
 export { default as removeRefreshTokenCookie } from './remove-refresh-token-cookie';

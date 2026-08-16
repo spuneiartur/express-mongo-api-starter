@@ -1,4 +1,4 @@
-import { error, removeRefreshTokenCookie } from '@functions';
+import { error, issueTokens, removeRefreshTokenCookie } from '@functions';
 import jwt from 'jsonwebtoken';
 
 export default async (req, res) => {
@@ -21,28 +21,8 @@ export default async (req, res) => {
   delete payload.nbf;
   delete payload.jti;
 
-  const token = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: '15m',
-    algorithm: 'HS256',
-  });
-
-  const refreshToken = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: '12h',
-    algorithm: 'HS256',
-  });
-
-  // Set refresh token as cookie
-  const oneDay = 24 * 3600 * 1000;
-  const isProduction = process.env.NODE_ENV === 'production';
-
-  res.cookie(process.env.JWT_TOKEN_NAME, refreshToken, {
-    domain: process.env.COOKIE_DOMAIN,
-    httpOnly: true,
-    maxAge: oneDay,
-    secure: isProduction,
-    signed: true,
-    sameSite: 'Lax',
-  });
+  // Sign both tokens again and refresh the refresh token cookie
+  const token = issueTokens(res, payload);
 
   return res.json({ token, message: 'Token refresh successful' });
 };

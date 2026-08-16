@@ -53,4 +53,7 @@ schema.plugin(hashPasswords);
 schema.plugin(paginate);
 schema.plugin(validate);
 
+// One account per email address, required by any login method that matches on email
+schema.index({ email: 1 }, { unique: true });
+
 export default model(name, schema);
