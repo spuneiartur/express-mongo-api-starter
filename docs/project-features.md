@@ -10,11 +10,17 @@ This feature will backup the entire deleted document and prevent it from being p
 
 JSON web tokens (JWT) and HTTP-only cookies are used to facilitate authentication.
 
+Every authentication method goes through the same `issueTokens` function, so the
+tokens and the refresh cookie are always built in exactly one place.
+
 ## Plugins and integrations
 
-You can use the common integrations from the `plugins` folder: AWS, Netopia, Postmark and Smartbill.
+You can use the common integrations from the `plugins` folder: AWS, Google Auth, Netopia, Postmark and Smartbill.
 
 Each common integration has an extensive documentation, code samples and step-by-step instructions.
+
+Optional plugins are turned on from their own `settings.json` file. A disabled
+plugin registers no routes at all.
 
 ## Loading and error states
 

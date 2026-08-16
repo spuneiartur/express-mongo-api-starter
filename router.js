@@ -1,4 +1,5 @@
 import * as exampleRoutes from '@examples/routes';
+import googleAuth from '@plugins/google-auth/router';
 import * as routes from '@routes';
 import { Router } from 'express';
 import middleware from 'express-goodies/middleware';
@@ -25,6 +26,9 @@ router.use(middleware.testLoading);
 router.use(routes.identity);
 router.use(routes.logger);
 router.use(exampleRoutes.todo);
+
+// Optional plugins, each one is a no-op while it is disabled
+router.use(googleAuth);
 
 // Matches any other HTTP method and route not matched before
 router.all('*', middleware.notFound);
