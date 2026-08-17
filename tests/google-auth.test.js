@@ -1,4 +1,4 @@
-import resolveIdentity from '@plugins/google-auth/src/resolve-identity';
+import resolveIdentity from '@plugins/google-auth/src/resolve-action';
 import { expect } from 'chai';
 import { it } from 'mocha';
 

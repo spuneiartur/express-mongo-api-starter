@@ -1,5 +1,5 @@
 import { Identity } from '@models';
-import SocialIdentity from './social-identity';
+import SocialIdentity from '../models/social-identity';
 
 /**
  * Loads everything the resolver needs in order to make a decision.

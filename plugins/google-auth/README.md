@@ -114,3 +114,45 @@ without a database or an HTTP call.
 ```bash
 npm test
 ```
+
+## Architecture
+
+This plugin is composed as a middleware chain rather than one orchestrating
+controller. The route is the policy:
+
+```js
+router.get(
+  '/auth/google/callback',
+  guards.verifyState,      // CSRF gate
+  guards.exchangeCode,     // code    -> req.googleToken
+  guards.readProfile,      // token   -> req.googleProfile
+  guards.resolveIdentity,  // profile -> req.user
+  guards.unlockLockout,    // plugin specific exception
+  guards.accountActive,    // the SAME gate the password login uses
+  guards.linkIdentity,
+  controllers.callback     // mints tokens, nothing else
+);
+```
+
+Three things follow from this shape:
+
+- `req.user` is the only contract between an authentication method and the
+  session. `middleware/credentials.js` fulfills it from an email and a password,
+  `middleware/resolve-identity.js` fulfills it from a Google profile, and
+  `controllers/identity/login.js` does not care which one ran.
+- `accountActive` is imported from the app, not reimplemented here. A new login
+  method cannot silently skip a check the password login enforces.
+- Failures are handled by `middleware/handle-error.js`, mounted on
+  `/auth/google` only. No `try/catch` in the controller, and errors from the
+  rest of the API still render as JSON.
+
+### The cost of this shape
+
+`req.user` and `req.googleProfile` are implicit. They appear in no signature and
+nothing verifies them, so reordering the chain or dropping a step breaks the
+flow silently. That is exactly why `controllers/identity/login.js` starts with a
+guard on `req.user`: it is the line that turns a broken chain into a loud
+failure instead of a quiet one.
+
+Middleware is the right tool for gates. It is a weaker tool for the main step of
+a flow, because the data handoff is invisible.

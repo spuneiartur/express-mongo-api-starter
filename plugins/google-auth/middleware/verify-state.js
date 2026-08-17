@@ -1,12 +1,13 @@
 import { error } from '@functions';
 import { timingSafeEqual } from 'crypto';
-import settings from './settings';
+import settings from '../src/settings';
 
 /**
- * Compares the state returned by Google with the one stored in the signed cookie.
- * Without this check anyone could replay a callback URL against a logged in browser.
+ * Compares the state returned by Google with the one stored in the signed
+ * cookie. Without this check anyone could replay a callback URL against a
+ * logged in browser.
  */
-const verifyState = (req, res) => {
+const verifyState = (req, res, next) => {
   const expected = req.signedCookies[settings.stateCookie];
   const actual = req.query.state;
 
@@ -20,6 +21,8 @@ const verifyState = (req, res) => {
   if (!timingSafeEqual(Buffer.from(expected), Buffer.from(actual))) {
     throw error(400, 'invalid-state');
   }
+
+  return next();
 };
 
 export default verifyState;

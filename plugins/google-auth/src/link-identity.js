@@ -1,4 +1,4 @@
-import SocialIdentity from './social-identity';
+import SocialIdentity from '../models/social-identity';
 
 /**
  * Creates or refreshes the link between an identity and a Google account.
