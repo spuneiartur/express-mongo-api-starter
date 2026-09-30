@@ -1,4 +1,5 @@
 import * as exampleRoutes from '@examples/routes';
+import plugins from '@plugins';
 import * as routes from '@routes';
 import { Router } from 'express';
 import middleware from 'express-goodies/middleware';
@@ -25,6 +26,9 @@ router.use(middleware.testLoading);
 router.use(routes.identity);
 router.use(routes.logger);
 router.use(exampleRoutes.todo);
+
+// Optional plugins, each router is a no-op while its plugin is disabled
+router.use(plugins);
 
 // Matches any other HTTP method and route not matched before
 router.all('*', middleware.notFound);
