@@ -1,0 +1,17 @@
+{
+  "name": "plugins/google-auth",
+  "version": "0.1",
+  "enabled": false,
+  "linking": "auto",
+  "allowSignup": true,
+  "defaultRole": "admin",
+  "allowedDomains": [],
+  "activateOnClaim": true,
+  "unlockOnLogin": true,
+  "successRedirect": "/auth/google",
+  "failureRedirect": "/login",
+  "scope": ["openid", "email", "profile"],
+  "prompt": "select_account",
+  "stateCookie": "google-oauth-state",
+  "stateMaxAge": 600000
+}

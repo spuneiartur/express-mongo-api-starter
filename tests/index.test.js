@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { describe } from 'mocha';
 import awsTest from './aws.test';
+import googleAuthTest from './google-auth.test';
 import mongooseTest from './mongoose.test';
 import netopiaTest from './netopia.test';
 import postmarkTest from './postmark.test';
@@ -20,6 +21,10 @@ describe('Test Smartbill plugin', function () {
 
 describe('Test AWS plugin', function () {
   awsTest();
+});
+
+describe('Test Google Auth plugin', function () {
+  googleAuthTest();
 });
 
 describe('Test Mongoose plugin', function () {
